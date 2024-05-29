@@ -177,6 +177,14 @@ class TestAccountService(TestCase):
         response = self.client.get(account_url, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_delete_not_allowed(self):
+        account = self._create_accounts(1)[0]
+        response = self.client.delete(BASE_URL, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
     
-
+    def test_delete_not_allowed(self):
+        account = self._create_accounts(1)[0]
+        new_account = self._create_accounts(1)[0]
+        response = self.client.put(BASE_URL, json=new_account.serialize(), content_type="application/json")        
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
