@@ -165,6 +165,18 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         accounts = response.get_json()
         self.assertEqual(accounts, [])
+
+    def test_delete_account(self):
+        account = self._create_accounts(1)[0]
+        account_url = BASE_URL + f'/{account.id}'
+        response = self.client.delete(account_url, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        empty_account = response.get_json()
+        self.assertEqual(empty_account, None)
+
+        response = self.client.get(account_url, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     
 
 
