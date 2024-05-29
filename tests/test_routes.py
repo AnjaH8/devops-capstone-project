@@ -152,6 +152,19 @@ class TestAccountService(TestCase):
         account_url = BASE_URL + f'/111'
         response = self.client.put(account_url, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_all_accounts(self):
+        accounts = self._create_accounts(5)
+        response = self.client.get(BASE_URL, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        resp_accounts = response.get_json()
+        self.assertEqual(len(resp_accounts), len(accounts))
+
+    def test_list_all_acounts_none_found(self):
+        response = self.client.get(BASE_URL, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        accounts = response.get_json()
+        self.assertEqual(accounts, [])
     
 
 
