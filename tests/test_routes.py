@@ -132,16 +132,15 @@ class TestAccountService(TestCase):
         account_url = BASE_URL + f'/{account.id}'
         response = self.client.get(account_url, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        items = ['id', 'name', 'email', 'address', 'phone_number', 'date_joined']
         new_account = response.get_json()
         self.assertEqual(new_account["name"], account.name)
 
     def test_account_not_found(self):
-        account = self._create_accounts(1)[0]
-        account_url = BASE_URL + f'/111'
+        self._create_accounts(1)[0]
+        account_url = BASE_URL + '/111'
         response = self.client.get(account_url, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_update_an_account(self):
         account = self._create_accounts(1)[0]
         account_url = BASE_URL + f'/{account.id}'
@@ -152,7 +151,7 @@ class TestAccountService(TestCase):
         self.assertEqual(resp_account["name"], new_account.name)
 
     def test_update_account_not_found(self):
-        account_url = BASE_URL + f'/111'
+        account_url = BASE_URL + '/111'
         response = self.client.put(account_url, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -181,14 +180,14 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_not_allowed(self):
-        account = self._create_accounts(1)[0]
+        self._create_accounts(1)[0]
         response = self.client.delete(BASE_URL, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
-    def test_delete_not_allowed(self):
-        account = self._create_accounts(1)[0]
+
+    def test_update_not_allowed(self):
+        self._create_accounts(1)[0]
         new_account = self._create_accounts(1)[0]
-        response = self.client.put(BASE_URL, json=new_account.serialize(), content_type="application/json")        
+        response = self.client.put(BASE_URL, json=new_account.serialize(), content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_security(self):
@@ -196,10 +195,10 @@ class TestAccountService(TestCase):
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_dict = {'X-Frame-Options': 'SAMEORIGIN',
-            'X-Content-Type-Options': 'nosniff',
-            'Content-Security-Policy': 'default-src \'self\'; object-src \'none\'',
-            'Referrer-Policy': 'strict-origin-when-cross-origin'
-            }
+                         'X-Content-Type-Options': 'nosniff',
+                         'Content-Security-Policy': 'default-src \'self\'; object-src \'none\'',
+                         'Referrer-Policy': 'strict-origin-when-cross-origin'
+                         }
         for key, value in expected_dict.items():
             self.assertEqual(value, response.headers.get(key))
 
